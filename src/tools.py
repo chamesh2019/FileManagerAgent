@@ -1,4 +1,5 @@
 import os
+import subprocess
 from typing import List
 from langchain_core.tools import tool
 import shutil
@@ -264,3 +265,34 @@ def open_explorer(path: str) -> str:
     except Exception as e:
         print(f"❌ Error opening Explorer: {str(e)}")
         return f"Error opening Explorer at {path}: {str(e)}"
+
+@tool
+def open_application(app_path: str) -> str:
+    """Open the specified application.
+    
+    Args:
+        app_path: Path to the application executable
+
+    Returns:
+        A message indicating success or failure.
+    """
+    print(f"🪟 OPEN APPLICATION: Opening application at '{app_path}'")
+    app_dir = os.path.dirname(app_path)
+
+    try:
+        print(f"Starting {app_path}...")
+        print(f"Setting working directory to: {app_dir}")
+
+        try:
+            subprocess.Popen([app_path], cwd=app_dir)
+            return (f"Application {app_path} started successfully.")
+
+        except FileNotFoundError:
+            return (f"Error: The file was not found at {app_path}")
+        except PermissionError:
+            return (f"Error: Insufficient permissions to run {app_path}")
+        except Exception as e:
+            return (f"An unexpected error occurred: {e}")
+    except Exception as e:
+        print(f"❌ Error opening application: {str(e)}")
+        return f"Error opening application at {app_path}: {str(e)}"
